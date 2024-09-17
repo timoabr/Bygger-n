@@ -1,6 +1,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include "uart.h"
+#include "sram.h"
 
 #define FOSC 4915200 
 #define BAUD 9600
@@ -11,5 +12,7 @@ void main(void) {
     uart_Init (MYUBRR);
     fdevopen(uart_Transmit, uart_Receive);
     printf("%d", 5);
+    SRAM_init();
+    SRAM_test();
     
 }
