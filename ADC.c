@@ -1,5 +1,9 @@
 #include "ADC.h"
 #include <util/delay.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include "OLED.h"
 
 void init_clock(){
 
@@ -20,11 +24,11 @@ uint8_t get_joystick_x(volatile char *adc)
 {
     uint8_t value;
     uint8_t x = check_ADC(2,adc);
-    if(x <=175){
-        value = 50*(x-25)/150;
+    if(x <=183){
+        value = 50*(x-32)/151;
     }
     else{
-        value = 50 + ((x-175)/1.6);
+        value = 50 + ((x-183)/((255-183)/50));
     }
 
     return value;
@@ -33,11 +37,11 @@ uint8_t get_joystick_y(volatile char *adc){
 
     uint8_t value;
     uint8_t y = check_ADC(3,adc);
-    if(y <=183){
-        value = 50*(y-27)/156;
+    if(y <=193){
+        value = 50*(y-32)/161;
     }
     else{
-        value = 50 + ((y-183)/1.44);
+        value = 50 + ((y-193)/((255-193)/(50)));
     }
     return value;
 }
@@ -104,15 +108,15 @@ uint8_t Joy_Direction(volatile char *adc){
     uint8_t x = get_joystick_x(adc);
     uint8_t y = get_joystick_y(adc);
     if((abs(x-50))>abs(y-50)){
-        if(x<45){
+        if(x>122 || x<=46 && x>0){
             return 0;
-        }else if((x>55)){
+        }else if((x>49 && x<=122)){
             return 1;
         }else{
             return 4;
         }
     }else{
-        if(y<45){
+        if(y>122 || y<46 && y>0){
             return 2;
         }else if((y>55)){
             return 3;
@@ -122,27 +126,36 @@ uint8_t Joy_Direction(volatile char *adc){
     }
 }
 
-void print_Joy_dir(volatile char *adc){
+    uint8_t iDown = 0;
+    uint8_t iUp = 0;
+    uint8_t pagePointer = 2;
+uint8_t print_Joy_dir(volatile char *adc){
     uint8_t dir= Joy_Direction(adc);
+     uint8_t y = get_joystick_y(adc);
     switch(dir)
         {
             case 0:
-                printf("Joy_direction: Left \n\r");
+                //LEFT
+                clear_OLED();
                 break;
             case 1:
-                printf("Joy_direction: Right \n\r");
+                //RIGHT
                 break;
             case 2:
-                printf("Joy_direction: Down \n\r");
+                //DOWN
+                if(y==254 && pagePointer<=4)
+                    pagePointer++;
                 break;
             case 3:
-                printf("Joy_direction: Up \n\r");
+                //UP
+                if(pagePointer > 2 && y==112)
+                    pagePointer--;
                 break;
             case 4:
-                printf("Joy_direction: Centre \n\r");
                 break;
         }
-
+        iDown = 0;
+        return pagePointer;
 }
 
 
