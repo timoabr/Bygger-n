@@ -20,28 +20,30 @@ void init_clock(){
 }
 
 
-uint8_t get_joystick_x(volatile char *adc)
+uint8_t get_joystick_x(volatile char *adc, uint8_t x_start, uint8_t y_start)
 {
     uint8_t value;
     uint8_t x = check_ADC(2,adc);
-    if(x <=183){
-        value = 50*(x-32)/151;
+    uint8_t bottum = x_start-153;
+    if(x <=x_start){
+        value = 50*(x-bottum)/(x_start-bottum);
     }
     else{
-        value = 50 + ((x-183)/((255-183)/50));
+        value = 50 + ((x-x_start)/(255-x_start))*50;
     }
 
     return value;
 }
-uint8_t get_joystick_y(volatile char *adc){
+uint8_t get_joystick_y(volatile char *adc, uint8_t x_start, uint8_t y_start){
 
     uint8_t value;
     uint8_t y = check_ADC(3,adc);
-    if(y <=193){
-        value = 50*(y-32)/161;
+    uint8_t bottum = y_start-155;
+    if(y <=y_start){
+        value = 50*(y-bottum)/(y_start-bottum);
     }
     else{
-        value = 50 + ((y-193)/((255-193)/(50)));
+        value = 50 + ((y-y_start)/(255-y_start))*50;
     }
     return value;
 }
@@ -103,22 +105,22 @@ uint8_t check_ADC(uint8_t a, volatile char *adc){
         }
 }
 
-uint8_t Joy_Direction(volatile char *adc){
+uint8_t Joy_Direction(volatile char *adc, uint8_t x_start, uint8_t y_start){
 
-    uint8_t x = get_joystick_x(adc);
-    uint8_t y = get_joystick_y(adc);
+    uint8_t x = get_joystick_x(adc, x_start, y_start);
+    uint8_t y = get_joystick_y(adc, x_start, y_start);
     if((abs(x-50))>abs(y-50)){
-        if(x>122 || x<=46 && x>0){
+        if(x<40){
             return 0;
-        }else if((x>49 && x<=122)){
+        }else if(x>80){
             return 1;
         }else{
             return 4;
         }
     }else{
-        if(y>122 || y<46 && y>0){
+        if(y<40){
             return 2;
-        }else if((y>55)){
+        }else if((y>80)){
             return 3;
         }else{
             return 4;
@@ -126,37 +128,36 @@ uint8_t Joy_Direction(volatile char *adc){
     }
 }
 
-    uint8_t iDown = 0;
-    uint8_t iUp = 0;
-    uint8_t pagePointer = 2;
-uint8_t print_Joy_dir(volatile char *adc){
-    uint8_t dir= Joy_Direction(adc);
-     uint8_t y = get_joystick_y(adc);
+
+void print_Joy_dir(volatile char *adc, uint8_t x_start, uint8_t y_start){
+    uint8_t dir= Joy_Direction(adc, x_start, y_start);
     switch(dir)
         {
             case 0:
                 //LEFT
-                clear_OLED();
+                printf("Left\n\r");
                 break;
             case 1:
                 //RIGHT
+                printf("Right\n\r");
                 break;
             case 2:
                 //DOWN
-                if(y==254 && pagePointer<=4)
-                    pagePointer++;
+                printf("Down\n\r");
+                    
                 break;
             case 3:
                 //UP
-                if(pagePointer > 2 && y==112)
-                    pagePointer--;
+                printf("Up\n\r");
                 break;
             case 4:
+                printf("Neutral\n\r");
                 break;
         }
-        iDown = 0;
-        return pagePointer;
+        
 }
+
+
 
 
 

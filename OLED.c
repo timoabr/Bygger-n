@@ -1,5 +1,7 @@
 #include "OLED.h"
+#include "ADC.h"
 #include "font.h"
+#include <util/delay.h>
 void oled_write_command(uint8_t command)
 {
     volatile char *ext_oled_command = (char *) 0x1000;
@@ -54,6 +56,10 @@ void selectpage(uint8_t line){
     oled_write_command(0xB0 + line);
         
 }
+
+//Data on the MCP is beng clocked on the rising egde of the clock signal this may affect the mode we need to use (and out on the falling edge)
+//CD must be low for this to work obiusly
+
 void selectcolumn(uint8_t column){
     oled_write_command(0x00 + (column % 16));
     oled_write_command(0x10 + (column / 16));
@@ -122,9 +128,15 @@ uint8_t displayMenu(uint8_t i)
 
 void subMenu1()
 {
+    while(is_button_pressed()){
+        _delay_ms(100);
+    }
     oled_init();
 
     char title[] = "POSITION 2";
+    char exit[] = "EXIT";
+
+    char pointer[] = "->";
 
     //choose a page(0-7)
     clear_OLED();
@@ -136,13 +148,39 @@ void subMenu1()
     selectcolumn(25);
 
     oled_print(title);
-}
+    selectpage(2);
+    selectcolumn(25);
+    oled_print(exit);
 
+    selectpage(2);
+    selectcolumn(5);
+    oled_print(pointer);
+
+while(1)
+{
+    
+    if(is_button_pressed()){
+    while(is_button_pressed()){
+        _delay_ms(100);
+    }
+    displayMenu(2);
+    break;
+
+    }
+
+}
+}
 void subMenu2()
 {
+    while(is_button_pressed()){
+        _delay_ms(100);
+    }
     oled_init();
 
     char title[] = "POSITION 3";
+    char exit[] = "EXIT";
+
+    char pointer[] = "->";
 
     //choose a page(0-7)
     clear_OLED();
@@ -154,13 +192,40 @@ void subMenu2()
     selectcolumn(25);
 
     oled_print(title);
+    selectpage(2);
+    selectcolumn(25);
+    oled_print(exit);
+
+    selectpage(2);
+    selectcolumn(5);
+    oled_print(pointer);
+
+while(1)
+{
+    
+    if(is_button_pressed()){
+    while(is_button_pressed()){
+        _delay_ms(100);
+    }
+    displayMenu(3);
+    break;
+
+    }
+
+}
 }
 
 void subMenu3()
 {
+    while(is_button_pressed()){
+        _delay_ms(100);
+    }
     oled_init();
 
     char title[] = "POSITION 4";
+    char exit[] = "EXIT";
+
+    char pointer[] = "->";
 
     //choose a page(0-7)
     clear_OLED();
@@ -172,4 +237,103 @@ void subMenu3()
     selectcolumn(25);
 
     oled_print(title);
+    selectpage(2);
+    selectcolumn(25);
+    oled_print(exit);
+
+    selectpage(2);
+    selectcolumn(5);
+    oled_print(pointer);
+
+while(1)
+{
+    
+    if(is_button_pressed()){
+    while(is_button_pressed()){
+        _delay_ms(100);
+    }
+    displayMenu(4);
+    break;
+
+    }
+
 }
+}
+
+int is_button_pressed()
+    {
+        //Read the button state
+        if(!(PINB & (1 << PB2)))
+        {
+            return 1;
+        }
+        return 0;
+    }
+void init_menu(volatile char *adc, uint8_t x_start, uint8_t y_start){
+    // Set PB2 as input for joystick button
+    DDRB &= ~(1 << PB2);
+    //Enable internal pull-up resistor on PB2
+    PORTB |= (1 << PB2);
+    uint8_t pagePointerI=2;
+    displayMenu(pagePointerI);
+    uint8_t pagePointerJ;
+
+while(1)
+{
+    pagePointerJ = change_oled_ptr(adc, pagePointerI, x_start, y_start);
+
+    if(pagePointerJ != pagePointerI)
+    {
+        displayMenu(pagePointerJ);
+        pagePointerI = pagePointerJ;
+        _delay_ms(300);
+    }else if(is_button_pressed() && pagePointerI==2){
+        subMenu1();
+    }
+    else if(is_button_pressed() && pagePointerI==3){
+
+    
+        subMenu2();
+    }
+    else if(is_button_pressed() && pagePointerI==4){
+        subMenu3();
+    }
+        _delay_ms(200);
+
+}
+    
+}
+
+
+uint8_t change_oled_ptr(volatile char *adc, uint8_t pagePointer, uint8_t x_start, uint8_t y_start){
+
+    uint8_t dir= Joy_Direction(adc, x_start, y_start);
+    switch(dir)
+        {
+            case 0:
+                //LEFT
+                break;
+            case 1:
+                //RIGHT
+                break;
+            case 2:
+                //DOWN
+                if(pagePointer<4){
+                    pagePointer++;
+                }
+                    
+                break;
+            case 3:
+                //UP
+                if(pagePointer > 2){
+                    pagePointer--;
+                }
+                    
+                break;
+            case 4:
+                break;
+        }
+        return pagePointer;
+}
+
+
