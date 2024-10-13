@@ -9,10 +9,11 @@ void SPI_MasterInit(void)
 //DDR_SPI = (1<<DD_MOSI) | (1<<DD_SCK);
 DDRB = (1<<PB5) | (1<<PB7) | (1<<PB4);
 
+
 //Enable SPI, Master, set clock rate fck/16
 SPCR = (1<<SPE) | (1<<MSTR) | (1<<SPR0) |(1<<SPIE);
-
 SPI_set_SS();
+
 }
 
 void SPI_MasterTransmit(char cData) //MOSI
@@ -41,7 +42,6 @@ char SPI_Receive(void)
 }
 
 void SPI_set_SS(){
-    DDRB |= (1<<PB4);
     PORTB |= (1<<PB4);
 }
 
@@ -53,12 +53,12 @@ void mcp_init(){
     SPI_MasterInit();
     mcp_reset();
 
-    _delay_ms(1);
+    _delay_ms(10);
 
-    /*uint8_t value = mcp_read(0b00001110);
-    if((value & MODE_MASK) != MODE_CONFIG){
+    uint8_t value = mcp_read(CANSTAT);
+    if((value & MODE_MASK) != CONFIG_MODE){
         printf("MCP2115 er ikke i konfigurasjonsmodus etter reset. CANSTAT: %x \n\r", value);
-    }*/
+    }
 }
 
 void mcp_reset() {
@@ -95,13 +95,13 @@ char mcp_read_status()
     
 }
 
-void mcp_bit_modify(uint8_t adress, uint8_t mask, uint8_t data){
+void mcp_bit_modify(uint8_t address, uint8_t mask, uint8_t data){
     SPI_clear_SS();
 
     SPI_MasterTransmit(MCP_BITMOD);
-    SPI_MasterTransmit(adress);
+    SPI_MasterTransmit(address);
     SPI_MasterTransmit(mask); //f.eks 0b00011000 this means that we want to modefy the bits with 1. 
-    SPI_MasterTransmit(data);
+    SPI_MasterTransmit(data); 
     SPI_set_SS();
 }
 

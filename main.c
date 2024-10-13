@@ -27,7 +27,7 @@ void main(void){
 
     mcp_init();
     mcp_set_mode(LOOPBACK_MODE);
-    printf("mode: %x\r\n", mcp_read(0b00001110));
+    printf("mode: %x\r\n", mcp_read(CANSTAT));
     mcp_write(MCP_TXB0SIDH, 0xA7);
     mcp_request_to_send_buffer0();
     uint8_t byte = mcp_read(MCP_RXB0SIDH);
