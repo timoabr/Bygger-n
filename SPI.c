@@ -1,4 +1,5 @@
 #include "SPI.h"
+#include "mcp.h"
 #include <util/delay.h>
 
 
@@ -55,8 +56,8 @@ void mcp_init(){
 
     _delay_ms(10);
 
-    uint8_t value = mcp_read(CANSTAT);
-    if((value & MODE_MASK) != CONFIG_MODE){
+    uint8_t value = mcp_read(MCP_CANSTAT);
+    if((value & MODE_MASK) != MODE_CONFIG){
         printf("MCP2115 er ikke i konfigurasjonsmodus etter reset. CANSTAT: %x \n\r", value);
     }
 }
@@ -114,5 +115,5 @@ SPI_set_SS();
 
 }
 void mcp_set_mode(uint8_t mode){
-    mcp_bit_modify(0b00001111, 0b11100000, mode);
+    mcp_bit_modify(MCP_CANCTRL, 0b11100000, mode); 
 }

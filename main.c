@@ -8,6 +8,7 @@
 #include "ADC.h"
 #include "OLED.h"
 #include "SPI.h"
+#include "mcp.h"
 
 
 #define BAUD 9600
@@ -26,8 +27,8 @@ void main(void){
     uint8_t y_start = check_ADC(3,adc);
 
     mcp_init();
-    mcp_set_mode(LOOPBACK_MODE);
-    printf("mode: %x\r\n", mcp_read(CANSTAT));
+    mcp_set_mode(MODE_LOOPBACK);
+    printf("mode: %x\r\n", mcp_read(MCP_CANSTAT));
     mcp_write(MCP_TXB0SIDH, 0xA7);
     mcp_request_to_send_buffer0();
     uint8_t byte = mcp_read(MCP_RXB0SIDH);
