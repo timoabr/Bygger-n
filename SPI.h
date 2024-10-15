@@ -31,5 +31,5 @@ uint8_t mcp_read(uint8_t andress);
 void mcp_write(uint8_t address, uint8_t data);
 char mcp_read_status();
 void mcp_bit_modify(uint8_t adress, uint8_t mask, uint8_t data);
-void mcp_request_to_send_buffer0();
+void mcp_request_to_send(int buffer_number);
 void mcp_set_mode(uint8_t mode);

@@ -8,7 +8,8 @@ void SPI_MasterInit(void)
 {
 //Set MOSI and SCK output, all others input
 //DDR_SPI = (1<<DD_MOSI) | (1<<DD_SCK);
-DDRB = (1<<PB5) | (1<<PB7) | (1<<PB4);
+DDRB = (1<<PB4);
+DDRB |= (1<<PB5) | (1<<PB7);
 
 
 //Enable SPI, Master, set clock rate fck/16
@@ -43,6 +44,7 @@ char SPI_Receive(void)
 }
 
 void SPI_set_SS(){
+    
     PORTB |= (1<<PB4);
 }
 
@@ -58,8 +60,12 @@ void mcp_init(){
 
     uint8_t value = mcp_read(MCP_CANSTAT);
     if((value & MODE_MASK) != MODE_CONFIG){
-        printf("MCP2115 er ikke i konfigurasjonsmodus etter reset. CANSTAT: %x \n\r", value);
+        printf("CANSTAT ERROR: %x \n\r", value);
+        printf("\n\r");
+        printf("\n\r");
     }
+    else
+        printf("It is in the config mode\n\r");
 }
 
 void mcp_reset() {
@@ -106,14 +112,22 @@ void mcp_bit_modify(uint8_t address, uint8_t mask, uint8_t data){
     SPI_set_SS();
 }
 
-void mcp_request_to_send_buffer0()
+void mcp_request_to_send(int buffer_number)
 {
 SPI_clear_SS();
+buffer_number = buffer_number %3;
 char data = MCP_RTS_TX0;
+if (buffer_number ==0){
+    data = MCP_RTS_TX0;
+}else if(buffer_number ==1){
+    data  = MCP_RTS_TX1;
+}else{ 
+    data = MCP_RTS_TX2;
+}
 SPI_MasterTransmit(data);
 SPI_set_SS();
 
 }
 void mcp_set_mode(uint8_t mode){
-    mcp_bit_modify(MCP_CANCTRL, 0b11100000, mode); 
+    mcp_bit_modify(MCP_CANCTRL, MODE_MASK, mode); 
 }

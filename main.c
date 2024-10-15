@@ -30,9 +30,18 @@ void main(void){
     mcp_set_mode(MODE_LOOPBACK);
     printf("mode: %x\r\n", mcp_read(MCP_CANSTAT));
     mcp_write(MCP_TXB0SIDH, 0xA7);
-    mcp_request_to_send_buffer0();
+    _delay_ms(10);
+    mcp_request_to_send(0);
+    _delay_ms(10);
     uint8_t byte = mcp_read(MCP_RXB0SIDH);
+    
     printf("mottar:  %x\r\n", byte);
+    _delay_ms(2000);
+    printf("\n\r");
+    printf("\n\r");
+    printf("\n\r");
+    _delay_ms(2000);
+
 
     
 

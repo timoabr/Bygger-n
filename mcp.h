@@ -86,9 +86,9 @@ Copyright 2003 Kimberly Otten Software Consulting
 #define MCP_LOAD_TX1	0x42
 #define MCP_LOAD_TX2	0x44
 
-#define MCP_RTS_TX0		0x81
+#define MCP_RTS_TX0		0x81 
 #define MCP_RTS_TX1		0x82
-#define MCP_RTS_TX2		0x84
+#define MCP_RTS_TX2		0x84 
 #define MCP_RTS_ALL		0x87
 
 #define MCP_READ_RX0	0x90
