@@ -19,6 +19,33 @@
 // Motta-buffer 1
 #define MCP_RXB1SIDH 0x71
 
+//Send-buffer 0.1
+#define MCP_TXB0SIDL 0x32
+//Send-buffer 1.1
+#define MCP_TXB1SIDL 0x42
+//Send-buffer 2.1
+#define MCP_TXB2SIDL 0x52
+//transmit buffer 0.1 length
+#define MCP_TXB0DLC 0x35
+//transmit buffer 0.1 length
+#define MCP_TXB1DLC 0x45
+//transmit buffer 0.1 length
+#define MCP_TXB2DLC 0x55
+//Transmit databyte 0.1
+#define MCP_TXB0D0 0x36
+//Transmit databyte 1.1
+#define MCP_TXB1D0 0x46
+//Transmit databyte 2.1
+#define MCP_TXB2D0 0x56
+//resieve buffer 0.2
+#define MCP_RXB0SIDL 0x62
+//resieve buffer 0.2
+#define MCP_RXB1SIDL 0x72
+//Length resieve 
+#define MCP_RXB0DLC 0x65
+//Data resieve
+#define MCP_RXB0D0 0x66
+
 
 void SPI_MasterTransmit(char cData);
 void SPI_MasterInit(void);

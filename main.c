@@ -9,6 +9,7 @@
 #include "OLED.h"
 #include "SPI.h"
 #include "mcp.h"
+#include "can.h"
 
 
 #define BAUD 9600
@@ -29,19 +30,15 @@ void main(void){
     mcp_init();
     mcp_set_mode(MODE_LOOPBACK);
     printf("mode: %x\r\n", mcp_read(MCP_CANSTAT));
-    mcp_write(MCP_TXB0SIDH, 0xA7);
-    _delay_ms(10);
-    mcp_request_to_send(0);
-    _delay_ms(10);
-    uint8_t byte = mcp_read(MCP_RXB0SIDH);
-    
-    printf("mottar:  %x\r\n", byte);
-    _delay_ms(2000);
-    printf("\n\r");
-    printf("\n\r");
-    printf("\n\r");
-    _delay_ms(2000);
+    message_t message1 = make_message(1,6,"hallo");
+    message_print(message1);
+    can_write(&message1);
+    message_t message2 = can_recieve();
+    message_print(message2);
 
+
+
+    
 
     
 
@@ -56,3 +53,18 @@ void main(void){
 }
 
 
+/*mcp_write(MCP_TXB0SIDH, 0xA7);
+    uint8_t byte1 = mcp_read(MCP_TXB0SIDH);
+    printf("motta1:  %x\r\n", byte1);
+    _delay_ms(10);
+    mcp_request_to_send(0);
+
+    _delay_ms(10);
+    uint8_t byte = mcp_read(MCP_RXB0SIDH);
+    printf("mottar:  %x\r\n", byte);
+    _delay_ms(2000);
+    printf("\n\r");
+    printf("\n\r");
+    printf("\n\r");
+    _delay_ms(2000);
+*/
