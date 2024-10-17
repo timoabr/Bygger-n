@@ -9,7 +9,7 @@
 #include "OLED.h"
 #include "SPI.h"
 #include "mcp.h"
-#include "can.h"
+#include "can1.h"
 
 
 #define BAUD 9600
@@ -36,15 +36,6 @@ void main(void){
     message_t message2 = can_recieve();
     message_print(message2);
 
-
-
-    
-
-    
-
-
-
-    
     //Need to set CAN to configuration mode before i start
     
     //init_menu(adc, x_start, y_start);
